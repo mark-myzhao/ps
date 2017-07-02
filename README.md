@@ -6,7 +6,7 @@ A simple and basic version of parameter server using MPI.
 
 ```
 .
-├── build/                      # webpack config files
+├── build/
 │   └── ...
 ├── include/
 ├── src/
@@ -14,4 +14,12 @@ A simple and basic version of parameter server using MPI.
 |   └── ...
 ├── Makefile
 └── README.md
+```
+
+## Test
+
+```bash
+cd $(PS_ROOT)
+make all
+make run
 ```

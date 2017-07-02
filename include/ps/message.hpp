@@ -1,7 +1,7 @@
 #ifndef MESSAGE_HPP_
 #define MESSAGE_HPP_
 
-#include <cstdlib>
+#include <iostream>
 
 namespace ps {
 
@@ -17,9 +17,10 @@ class Message {
         delete [] values_;
     }
     int getSerialSize() const;
-    void serialize(T* toBuff) const;
-    void deserialize(T* fromBuff);
+    T* serialize() const;
+    void deserialize(const T* fromBuff);
     T get(int index) const;
+    void show(int num=-1) const;
   private:
     // the number of k-v pairs
     int count_;  
@@ -75,11 +76,8 @@ int Message<T>::getSerialSize() const {
 }
 
 template <typename T>
-void Message<T>::serialize(T* toBuff) const {
-  if (toBuff != NULL) {
-    return;
-  }
-  toBuff = new T[getSerialSize()];
+T* Message<T>::serialize() const {
+  T* toBuff = new T[getSerialSize()];
   toBuff[0] = (T) count_;
   if (range_) {
     toBuff[1] = keys_[0];
@@ -93,10 +91,11 @@ void Message<T>::serialize(T* toBuff) const {
       toBuff[2 * i + 3] = values_[i];
     }
   }
+  return toBuff;
 }
 
 template <typename T>
-void Message<T>::deserialize(T* fromBuff) {
+void Message<T>::deserialize(const T* fromBuff) {
   if (fromBuff == NULL) {
     return;
   }
@@ -135,6 +134,23 @@ T Message<T>::get(int index) const {
   return values_[index];
 }
 
+template <typename T>
+void Message<T>::show(int num) const {
+  if (num == -1) {  // only show 10 items
+    num = count_ > 10 ? 10 : count_;
+  } else {
+    num = num > count_ ? count_ : num;
+  }
+  if (range_) {
+    for (int i = 0; i < num; ++i) {
+      std::cout << (keys_[0] + i) << ": " << values_[i] << std::endl;
+    }
+  } else {
+    for (int i = 0; i < num; ++i) {
+      std::cout << keys_[i] << ": " << values_[i] << std::endl;
+    }
+  }
 }
 
+}
 #endif

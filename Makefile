@@ -23,6 +23,7 @@ run: compile
 
 compile: $(CXX_OBJS) $(OBJ_DIR)/$(TEST_FILE).o
 	$(LINK) $^ -o $(DEST_DIR)/$(TEST_FILE)
+	@echo "[Success] Build Successful"
 
 $(OBJ_DIR)/$(TEST_FILE).o: $(SRC_DIR)/$(TEST_FILE).cpp mkdir
 	$(CXX) $< $(CFLAG) -o $@  
