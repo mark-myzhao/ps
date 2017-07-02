@@ -1,6 +1,7 @@
 #ifndef MESSAGE_HPP_
 #define MESSAGE_HPP_
 
+#include <cstring>
 #include <iostream>
 
 namespace ps {
@@ -20,6 +21,18 @@ class Message {
     T* serialize() const;
     void deserialize(const T* fromBuff);
     T get(int index) const;
+    T* getFullArray(int total) {
+      T* tmpBuf = new T[total];
+      memset(tmpBuf, 0, total);
+      for (int i = 0; i < count_; ++i) {
+        if (range_) {
+          tmpBuf[keys_[0] + i] = values_[i];
+        } else {
+          tmpBuf[keys_[i]] = values_[i];
+        }
+      } 
+      return tmpBuf;
+    }
     void show(int num=-1) const;
   private:
     // the number of k-v pairs

@@ -1,7 +1,8 @@
-#include "ps/message.hpp"
-
 #include <iostream>
 #include <cassert>
+
+#include "ps/message.hpp"
+#include "ps/psenv.hpp"
 
 void testMessage() {
   std::cout << "Test Constructor" << std::endl;
@@ -35,7 +36,41 @@ void testMessage() {
   delete [] serialBuff2;
 }
 
-int main() {
-  testMessage();
+void testPsenv() {
+  ps::Psenv env;
+  ps::Server* server = env.getServer();
+  ps::Worker* worker1 = env.getWorker();
+  ps::Worker* worker2 = env.getWorker();
+  std::cout << server->getRank() << std::endl;
+  std::cout << worker1->getRank() << std::endl;
+  std::cout << worker2->getRank() << std::endl;
+}
+
+class Test {
+  public:
+    Test(int i) : i_(i) {}
+    void run() {
+      std::cout << i_ << std::endl;
+    }
+  private:
+    int i_;
+};
+
+void run() {
+  std::cout << "test" << std::endl;
+}
+
+void testWorker() {
+  ps::Psenv env;
+  ps::Worker* worker = env.getWorker();
+  Test test(123);
+  worker->computeGrad(run);
+}
+
+int main(int argc, char** argv) {
+  MPI_Init(&argc, &argv);
+  // testMessage();
+  // testPsenv();
+  testWorker();
   return 0;
 }

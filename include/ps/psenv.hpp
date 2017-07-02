@@ -1,12 +1,13 @@
 #ifndef PSENV_HPP_
 #define PSENV_HPP_
 
-#include <vector>
-
-#include "ps/worker.hpp"
 #include "ps/server.hpp"
+#include "ps/worker.hpp"
 
 namespace ps {
+
+class Worker;
+class Server;
 
 /**
  * @brief A Parameter Server environment holding configurations for the whole system.
@@ -15,14 +16,22 @@ namespace ps {
  */
 class Psenv {
   public:
-    Psenv(int root=0) { root_ = root > 0 ? root : 0; }
-    Worker & getNewWorker();
-    Server & getNewServer();
-    Worker & getWorker(int rank) const;
-    Server & getServer() const;
+    Psenv(int root=0); 
+    ~Psenv() {
+      delete worker_;
+      delete server_;
+    }
+    bool isServer() const;
+    Worker* getWorker();
+    Server* getServer();
+    int getCurRank() const {
+      return rank_;
+    }
   private:
+    int size_;  // number of nodes
+    int rank_;  // current rank
     int root_;  // rank of the server
-    vector<Worker> workerList_;
+    Worker* worker_ = NULL;
     Server* server_ = NULL;
 };
 

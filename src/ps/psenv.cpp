@@ -2,25 +2,29 @@
 
 namespace ps {
 
-Worker & Psenv::getNewWorker() {
-  int curRank = workerList_.size() >= root_ ? workerList_.size() + 1 : workerList_.size();
-  Worker newWorker(curRank);
-  workerList_.push_back(newWorker);
-  return newWorker;
+Psenv::Psenv(int root) {
+  MPI_Comm_size(MPI_COMM_WORLD, &size_);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank_);
+  root_ = root > 0 ? root : 0;
 }
 
-Server & Psenv::getNewServer() {
-  if (server_ == NULL) {
-    server_ = new Server(root_);
+bool Psenv::isServer() const {
+  return root_ == rank_;
+}
+
+Worker* Psenv::getWorker() {
+  if (isServer()) return NULL;
+  if (worker_ != NULL) {
+    worker_ = new Worker(getCurRank());
   }
-  return server_;
+  return worker_;
 }
 
-Worker & Psenv::getWorker(int rank) const {
-  return rank < workerList_.size() ? workerList_.get(rank) : NULL;
-}
-
-Server & PSenv::getServer() const {
+Server* Psenv::getServer() {
+  if (!isServer()) return NULL;
+  if (server_ == NULL) {
+    server_ = new Server(rank_, size_, root_);
+  }
   return server_;
 }
 

@@ -2,17 +2,20 @@
 
 namespace ps {
 
-void Worker::push() {
+void Worker::push(Message<double> & grad) {
 
 }
 
-void Worker::pull() {
+void Worker::pull(Message<double> & weight) {
 
 }
 
-void Worker::push_async() {}
-void Worker::pull_async() {}
-void Worker::computeGrad() {}
-void Worker::wait() {}
+void Worker::push_async(Message<double> & grad) {}
+
+void Worker::pull_async(Message<double> & weight) {}
+
+void Worker::computeGrad(OPPTR op) {
+  op();
+}
 
 }

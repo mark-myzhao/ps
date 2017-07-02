@@ -4,9 +4,12 @@
 #include "mpi.h"
 
 #include "ps/message.hpp"
-#include "ps/psenv.hpp"
 
 namespace ps {
+
+typedef void (*OPPTR)(void);
+
+class Psenv;
 
 /** @brief Worker nodes of the parallel system. 
  *         It will do these things in order:
@@ -17,12 +20,13 @@ namespace ps {
  */
 class Worker {
   public:
-    void push();
-    void pull();
-    void push_async();
-    void pull_async();
-    void computeGrad();
-    void wait();
+    ~Worker() {}
+    void push(Message<double> & grad);
+    void pull(Message<double> & weight);
+    void push_async(Message<double> & grad);
+    void pull_async(Message<double> & weight);
+    void computeGrad(OPPTR op);
+    void wait() const { MPI_Barrier(MPI_COMM_WORLD); }
     int getRank() const { return rank_; }
   private:
     Worker(int rank) : rank_(rank) {}
