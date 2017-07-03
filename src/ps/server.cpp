@@ -3,26 +3,15 @@
 
 namespace ps {
 
-void Server::init(int count) {
-  count_ = count;
-  diff_ = new double[count];
-  data_ = new double[count];
-  memset(diff_, 0, count);
-  memset(data_, 0, count);
-}
-
-void Server::recvDiffMsg() {
+void Server::recvDiff() {
   memset(diff_, 0, count_);
-  double* tmpBuf = new double[3 + count_ * 2];
+  double* tmpBuf = new double[count_];
   for (int i = 0; i < size_; ++i) {
     //  accumulate diff
     if (i != root_) {
-      MPI_Recv(tmpBuf, 3 + count_ * 2, MPI_DOUBLE, i, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-      Message<double> recvMsg;
-      recvMsg.deserialize(tmpBuf);
-      double* fullArray = recvMsg.getRawArray();
+      MPI_Recv(tmpBuf, count_, MPI_DOUBLE, i, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
       for (int j = 0; j < count_; ++j) {
-        diff_[j] += fullArray[j];
+        diff_[j] += tmpBuf[j];
       }
     }
   }
@@ -32,17 +21,19 @@ void Server::recvDiffMsg() {
   delete [] tmpBuf;
 }
 
-void Server::sendWeightMsg() const {
-  Message<double> sendMsg(data_, count_, 0);
+void Server::sendWeight() {
   for (int i = 0; i < size_; ++i) {
     if (i != root_) {
-      MPI_Send(sendMsg.serialize(), sendMsg.getSerialSize(), MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+      MPI_Send(data_, count_, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
     }
   }
 }
 
-void Server::computeWeight() {
-  // update weight with diff_
+void Server::computeWeight(double lr) {
+  // update data_ with diff_
+  for (int i = 0; i < count_; ++i) {
+    data_[i] = data_[i] - lr * diff_[i];
+  }
 }
 
 }

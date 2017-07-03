@@ -26,7 +26,8 @@ class Message {
     int getSerialSize() const;
     T* serialize() const;
     void deserialize(const T* fromBuff);
-    void add(int index, T value, double threshold=DEFAULT_THRESHOLD);
+    void set(int index, T value);
+    void add(T value, double threshold=DEFAULT_THRESHOLD);
     T get(int index) const;
     T* getRawArray() const;
     // the number of k-v pairs
@@ -128,12 +129,20 @@ void Message<T>::deserialize(const T* fromBuff) {
 }
 
 template <typename T>
-void Message<T>::add(int index, T value, double threshold) {
+void Message<T>::set(int index, T value) {
+  if (index >= size_) return;
+  keys_.push_back(index);
+  values_.push_back(value);
+}
+
+template <typename T>
+void Message<T>::add(T value, double threshold) {
   if (threshold > (double) value && (double) value > -1 * threshold) {
     // do nothing
     return;
-  } 
-  keys_.push_back(index);
+  }
+  ++size_; 
+  keys_.push_back(size_);
   values_.push_back(value);
 }
 

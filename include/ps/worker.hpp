@@ -4,10 +4,9 @@
 #include "mpi.h"
 
 #include "ps/message.hpp"
+#include "ps/node.hpp"
 
 namespace ps {
-
-typedef void (*OPPTR)(void);
 
 class Psenv;
 
@@ -18,19 +17,25 @@ class Psenv;
  *           3. Push gradients to the server (sync or async);
  *           4. Go back to (1.). 
  */
-class Worker {
+class Worker : public Node {
   public:
     ~Worker() {}
-    void push(Message<double> & grad);
-    void pull(Message<double> & weight);
-    void push_async(Message<double> & grad);
-    void pull_async(Message<double> & weight);
-    void computeGrad(OPPTR op);
+    void pull();
+    void push();
+    void setDiff(double* computedDiff);
     void wait() const { MPI_Barrier(MPI_COMM_WORLD); }
-    int getRank() const { return rank_; }
   private:
-    Worker(int rank) : rank_(rank) {}
-    int rank_;
+    Worker(int rank, int size, int root, int count)
+      : Node(rank, size, root, count) {
+      if (count > 0) {
+        data_ = new double[count];
+        diff_ = new double[count];
+        memset(data_, 0, count);
+        memset(diff_, 0, count);
+      }
+    }
+    double* data_;
+    double* diff_;
 
   friend class Psenv;
 }; 

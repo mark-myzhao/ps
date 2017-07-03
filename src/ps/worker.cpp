@@ -2,20 +2,20 @@
 
 namespace ps {
 
-void Worker::push(Message<double> & grad) {
-
+void Worker::push() {
+  if (rank_ == Node::getCurRank()) {
+    MPI_Send(diff_, count_, MPI_DOUBLE, root_, 1, MPI_COMM_WORLD);
+  }
 }
 
-void Worker::pull(Message<double> & weight) {
-
+void Worker::pull() {
+  if (rank_ == Node::getCurRank()) { 
+    MPI_Recv(data_, count_, MPI_DOUBLE, root_, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+  }
 }
 
-void Worker::push_async(Message<double> & grad) {}
-
-void Worker::pull_async(Message<double> & weight) {}
-
-void Worker::computeGrad(OPPTR op) {
-  op();
+void Worker::setDiff(double* computedDiff) {
+  memcpy(diff_, computedDiff, count_);
 }
 
 }

@@ -1,5 +1,7 @@
 PROJECT := ps
 
+EXE := mpirun
+
 DEST_DIR := build
 OBJ_DIR := $(DEST_DIR)/obj
 INCLUDE_DIR := include
@@ -19,7 +21,7 @@ TEST_FILE := main
 all: compile
 
 run: compile
-	$(DEST_DIR)/$(TEST_FILE)
+	$(EXE) -n 4 $(DEST_DIR)/$(TEST_FILE)
 
 compile: $(CXX_OBJS) $(OBJ_DIR)/$(TEST_FILE).o
 	$(LINK) $^ -o $(DEST_DIR)/$(TEST_FILE)
