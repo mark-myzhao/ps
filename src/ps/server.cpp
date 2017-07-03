@@ -4,7 +4,9 @@
 namespace ps {
 
 void Server::recvDiff() {
-  memset(diff_, 0, count_);
+  for (int i = 0; i < count_; ++i) {
+    diff_[i] = 0;
+  }
   double* tmpBuf = new double[count_];
   for (int i = 0; i < size_; ++i) {
     //  accumulate diff
@@ -16,7 +18,7 @@ void Server::recvDiff() {
     }
   }
   for (int i = 0; i < count_; ++i) {
-    diff_[i] /= (double) size_;
+    diff_[i] /= (double) (size_ - 1);
   }
   delete [] tmpBuf;
 }

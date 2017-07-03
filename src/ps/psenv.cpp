@@ -17,7 +17,7 @@ bool Psenv::isServer() const {
 
 Worker* Psenv::getWorker() {
   if (isServer()) return NULL;
-  if (worker_ != NULL) {
+  if (worker_ == NULL) {
     worker_ = new Worker(getCurRank(), size_, root_, count_);
   }
   return worker_;

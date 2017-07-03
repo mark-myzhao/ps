@@ -27,25 +27,33 @@ int main(int argc, char** argv) {
   double* preComputedDiff = new double[count];
   for (int i = 0; i < count; ++i) {
     data[i] = 0.0;
-    preComputedDiff[i] = 0.0;
+    preComputedDiff[i] = 1.0;
   }
   Psenv::initalize(&argc, &argv);
   Psenv* env = Psenv::getEnv(0, count);
   Server* server = env->getServer();
   Worker* worker = env->getWorker();
-  if (env->isServer()) {
-    // compute weight
-    server->computeWeight(0.01);
-    server->show();
-    server->sendWeight();
-    server->recvDiff();
-  } else {
-    cout << "this is worker " << Psenv::getCurRank() << endl;
-    worker->pull();
-    worker->setDiff(preComputedDiff);
-    worker->push();
+  double* tmpBuf = new double[5];
+  for (int i = 0; i < 10; ++i) {
+    if (env->isServer()) {
+      if (server != NULL) {  
+        // compute weight
+        server->computeWeight(0.01);
+        server->sendWeight();
+        server->recvDiff();
+        server->show();
+      }
+    } else {
+      if (worker != NULL) {
+        worker->pull();
+        // compute gradients here
+        worker->setDiff(preComputedDiff);
+        worker->push();
+      }
+    }
   }
   delete [] data;
   delete [] preComputedDiff;
+  Psenv::finalize();
   return 0;
 }

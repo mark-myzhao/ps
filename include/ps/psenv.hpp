@@ -38,14 +38,13 @@ class Psenv {
     static void initalize(int* argc, char*** argv) {
       MPI_Init(argc, argv);
     }
+    static void finalize() {
+      MPI_Finalize();
+    }
     static int getCurRank() {
       int rank = -1;
       MPI_Comm_rank(MPI_COMM_WORLD, &rank);
       return rank;
-    }
-    // Debug only
-    void show() const {
-      std::cout << size_ << " " << count_ << " " << root_ << std::endl;
     }
   private:
     Psenv(int root, int count); 

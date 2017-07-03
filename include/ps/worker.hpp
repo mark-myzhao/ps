@@ -26,16 +26,7 @@ class Worker : public Node {
     void wait() const { MPI_Barrier(MPI_COMM_WORLD); }
   private:
     Worker(int rank, int size, int root, int count)
-      : Node(rank, size, root, count) {
-      if (count > 0) {
-        data_ = new double[count];
-        diff_ = new double[count];
-        memset(data_, 0, count);
-        memset(diff_, 0, count);
-      }
-    }
-    double* data_;
-    double* diff_;
+      : Node(rank, size, root, count) {}
 
   friend class Psenv;
 }; 

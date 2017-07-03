@@ -27,34 +27,9 @@ class Server : public Node {
     void sendWeight();
     // Computer weight with diff, data and learning rate
     void computeWeight(double lr=0.01);
-    void wait() const { MPI_Barrier(MPI_COMM_WORLD); }
-    // Debug only
-    void show() const {
-      std::cout << "Data: ";
-      for (int i = 0; i < count_; ++i) {
-        std::cout << data_[i] << " ";
-      }
-      std::cout << std::endl;
-      
-      std::cout << "Diff: ";
-      for (int i = 0; i < count_; ++i) {
-        std::cout << diff_[i] << " ";
-      }
-      std::cout << std::endl;
-    }
   private:
     Server(int rank, int size, int root, int count) 
-      : Node(rank, size, root, count) {
-      if (count > 0) {
-        diff_ = new double[count];
-        data_ = new double[count];
-        memset(diff_, 0, count);
-        memset(data_, 0, count);
-      }
-    }
-    // use the server to manage global weights and gradients
-    double* data_;  // weights
-    double* diff_;  // gradients
+      : Node(rank, size, root, count) {}
 
   friend class Psenv;
 };

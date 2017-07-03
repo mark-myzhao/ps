@@ -15,7 +15,9 @@ void Worker::pull() {
 }
 
 void Worker::setDiff(double* computedDiff) {
-  memcpy(diff_, computedDiff, count_);
+  for (int i = 0; i < count_; ++i) {
+    diff_[i] = computedDiff[i];
+  }
 }
 
 }
