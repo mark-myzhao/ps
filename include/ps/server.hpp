@@ -20,13 +20,7 @@ class Server {
       delete [] data_;
       delete [] diff_;
     }
-    void init(int count) {
-      count_ = count;
-      diff_ = new double[count];
-      data_ = new double[count];
-      memset(diff_, 0, count);
-      memset(data_, 0, count);
-    }
+    void init(int count); 
     void recvDiffMsg();
     void sendWeightMsg() const;
     // Computer weight with diff, data and learning rate
@@ -39,9 +33,10 @@ class Server {
     int rank_;  // current rank
     int size_;  // the number of nodes
     int root_;  // server rank
-    int count_;
-    double* data_;
-    double* diff_;
+    int count_;  // the number of parameters of the net
+    // use the server to manage global weights and gradients
+    double* data_;  // weights
+    double* diff_;  // gradients
 
   friend class Psenv;
 };
