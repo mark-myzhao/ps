@@ -4,6 +4,10 @@
 #include <cstring>
 #include <iostream>
 
+#include <boost/thread/thread.hpp>
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
+
 #include "mpi.h"
 
 #include "ps/message.hpp"
@@ -18,13 +22,16 @@ class Psenv;
  */
 class Server : public Node {
   public:
-    ~Server() {
-      delete [] data_;
-      delete [] diff_;
-    }
+    static const int OP_SEND = 0;
+    static const int OP_RECV = 1;
+    ~Server() {}
     // recv gradients from workers, sync version
     void recvDiff();
-    void sendWeight();
+    void sendWeight() const;
+    // async version
+    void asyncOp(int op);
+    void sendWeightToAWorker(int rank);
+    void recvDiffFromAWorker(int rank);
     // Computer weight with diff, data and learning rate
     void computeWeight(double lr=0.01);
   private:

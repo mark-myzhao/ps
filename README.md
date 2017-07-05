@@ -9,12 +9,16 @@ A simple and basic version of parameter server using MPI.
 ├── build/
 │   └── ...
 ├── include/
+|   ├── ps
+|   └── ...
 ├── src/
 |   ├── ps
 |   └── ...
 ├── Makefile
 └── README.md
 ```
+
+## Design
 
 ## Test
 

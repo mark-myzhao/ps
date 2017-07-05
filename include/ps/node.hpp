@@ -5,6 +5,10 @@
 
 class Node {
   public: 
+    ~Node() {
+      delete [] data_;
+      delete [] diff_;
+    }
     int getNodeRank() const { return rank_; }
     static int getCurRank() {
       int rank = -1;
@@ -26,6 +30,8 @@ class Node {
       }
       std::cout << std::endl;
     }
+    double* getData() { return data_; }
+    double* getDiff() { return diff_; }
   protected:
     Node(int rank, int size, int root, int count)
       : rank_(rank), size_(size), root_(root), count_(count) {
@@ -38,12 +44,13 @@ class Node {
         }
       }
     }
-    int rank_;   // node rank
-    int size_;   // the number of nodes
-    int root_;   // server rank
-    int count_;  // the number of parameters in the net
-    double* data_;
-    double* diff_;
+    boost::mutex mtx_;  // used to lock thread
+    int rank_;          // node rank
+    int size_;          // the number of nodes
+    int root_;          // server rank
+    int count_;         // the number of parameters in the net
+    double* data_;      // store the weights
+    double* diff_;      // store the gradients
 };
 
 #endif

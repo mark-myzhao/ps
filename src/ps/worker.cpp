@@ -2,16 +2,26 @@
 
 namespace ps {
 
-void Worker::push() {
+void Worker::pull() {
+  if (rank_ == Node::getCurRank()) { 
+    MPI_Recv(data_, count_, MPI_DOUBLE, root_, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+  }
+}
+
+void Worker::push() const {
   if (rank_ == Node::getCurRank()) {
     MPI_Send(diff_, count_, MPI_DOUBLE, root_, 1, MPI_COMM_WORLD);
   }
 }
 
-void Worker::pull() {
-  if (rank_ == Node::getCurRank()) { 
-    MPI_Recv(data_, count_, MPI_DOUBLE, root_, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-  }
+void Worker::pullAsync() {
+  mtx_.lock();
+  mtx_.unlock();
+}
+
+void Worker::pushAsync() {
+  mtx_.lock();
+  mtx_.unlock();
 }
 
 void Worker::setDiff(double* computedDiff) {
@@ -19,5 +29,6 @@ void Worker::setDiff(double* computedDiff) {
     diff_[i] = computedDiff[i];
   }
 }
+
 
 }

@@ -1,6 +1,8 @@
 #ifndef PS_WORKER_HPP_
 #define PS_WORKER_HPP_
 
+#include <boost/thread/thread.hpp>
+
 #include "mpi.h"
 
 #include "ps/message.hpp"
@@ -21,7 +23,9 @@ class Worker : public Node {
   public:
     ~Worker() {}
     void pull();
-    void push();
+    void push() const;
+    void pullAsync();
+    void pushAsync();
     void setDiff(double* computedDiff);
     void wait() const { MPI_Barrier(MPI_COMM_WORLD); }
   private:

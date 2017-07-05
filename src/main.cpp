@@ -1,11 +1,14 @@
 #include <iostream>
 #include <cassert>
 
+#include <boost/thread/thread.hpp>
+
 #include "ps/message.hpp"
 #include "ps/psenv.hpp"
 
 using std::cout;
 using std::endl;
+using boost::thread;
 using ps::Psenv;
 using ps::Server;
 using ps::Worker;
@@ -17,8 +20,7 @@ void printArr(double* arr, int count) {
   cout << endl;
 }
 
-int main(int argc, char** argv) {
-  // MPI_Init(&argc, &argv);
+void syncTest(int* argc, char*** argv) {
   // This is a test program.
   // Initialized data: [0, 0, 0, 0, 0]
   // Manually run some iteration and see the result
@@ -29,7 +31,7 @@ int main(int argc, char** argv) {
     data[i] = 0.0;
     preComputedDiff[i] = 1.0;
   }
-  Psenv::initalize(&argc, &argv);
+  Psenv::initalize(argc, argv);
   Psenv* env = Psenv::getEnv(0, count);
   Server* server = env->getServer();
   Worker* worker = env->getWorker();
@@ -55,5 +57,29 @@ int main(int argc, char** argv) {
   delete [] data;
   delete [] preComputedDiff;
   Psenv::finalize();
+}
+
+void asyncTest() {
+
+}
+
+void hello() {
+  for (int i = 0; i < 10; ++i) {
+    cout << i << endl;
+  }
+}
+
+void hello2() {
+  std::cout << boost::this_thread::get_id() << std::endl;
+}
+
+int main(int argc, char** argv) {
+  // syncTest();
+  thread t(hello);
+  thread t2(hello2);
+  for (int i = 0; i < 100; ++i) {
+
+  }
+  t2.join();
   return 0;
 }
