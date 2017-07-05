@@ -2,7 +2,9 @@
 #define PS_SERVER_HPP_
 
 #include <cstring>
+#include <cstdio>
 #include <iostream>
+
 
 #include <boost/thread/thread.hpp>
 #include <boost/function.hpp>
@@ -35,8 +37,8 @@ class Server : public Node {
     // Computer weight with diff, data and learning rate
     void computeWeight(double lr=0.01);
   private:
-    Server(int rank, int size, int root, int count) 
-      : Node(rank, size, root, count) {}
+    Server(int rank, int size, int root, int count, bool debug=false) 
+      : Node(rank, size, root, count, debug) {}
 
   friend class Psenv;
 };

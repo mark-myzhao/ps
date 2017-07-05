@@ -33,8 +33,8 @@ class Node {
     double* getData() { return data_; }
     double* getDiff() { return diff_; }
   protected:
-    Node(int rank, int size, int root, int count)
-      : rank_(rank), size_(size), root_(root), count_(count) {
+    Node(int rank, int size, int root, int count, bool debug=false)
+      : rank_(rank), size_(size), root_(root), count_(count), debug_(debug) {
       if (count > 0) {
         diff_ = new double[count];
         data_ = new double[count];
@@ -49,6 +49,7 @@ class Node {
     int size_;          // the number of nodes
     int root_;          // server rank
     int count_;         // the number of parameters in the net
+    const bool debug_;  // display debug info
     double* data_;      // store the weights
     double* diff_;      // store the gradients
 };

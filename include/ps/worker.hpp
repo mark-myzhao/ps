@@ -1,7 +1,11 @@
 #ifndef PS_WORKER_HPP_
 #define PS_WORKER_HPP_
 
+#include <cstdio>
+
 #include <boost/thread/thread.hpp>
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
 
 #include "mpi.h"
 
@@ -29,8 +33,8 @@ class Worker : public Node {
     void setDiff(double* computedDiff);
     void wait() const { MPI_Barrier(MPI_COMM_WORLD); }
   private:
-    Worker(int rank, int size, int root, int count)
-      : Node(rank, size, root, count) {}
+    Worker(int rank, int size, int root, int count, bool debug)
+      : Node(rank, size, root, count, debug) {}
 
   friend class Psenv;
 }; 

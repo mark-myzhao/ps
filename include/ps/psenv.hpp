@@ -27,12 +27,13 @@ class Psenv {
       MPI_Finalize();
     }
     bool isServer() const;
+    void setDebug(bool debug);
     Worker* getWorker();
     Server* getServer();
 
     // static methods
-    static Psenv* getEnv(int root=0, int count=0) {
-      if (env_ == NULL) env_ = new Psenv(root, count);
+    static Psenv* getEnv(int root=0, int count=0, bool debug=false) {
+      if (env_ == NULL) env_ = new Psenv(root, count, debug);
       return env_;
     }
     static void initalize(int* argc, char*** argv) {
@@ -47,11 +48,12 @@ class Psenv {
       return rank;
     }
   private:
-    Psenv(int root, int count); 
+    Psenv(int root, int count, bool debug); 
     static Psenv* env_;
     int size_;   // number of nodes
     int count_;  // number of parameters in the net
     int root_;   // rank of the server
+    bool debug_;
     Worker* worker_ = NULL;
     Server* server_ = NULL;
 };

@@ -15,13 +15,27 @@ void Worker::push() const {
 }
 
 void Worker::pullAsync() {
-  mtx_.lock();
-  mtx_.unlock();
+  if (rank_ == Node::getCurRank()) {
+    if (debug_) printf("+[Worker %d](async): pull weight from the server\n", Node::getCurRank());
+    mtx_.lock();
+    boost::function<void (void)> pullFunc(boost::bind(&Worker::pull, this));
+    boost::thread t(pullFunc);
+    t.join();
+    mtx_.unlock();
+    if (debug_) printf("-[Worker %d](async): finish pull weight\n", Node::getCurRank());
+  }
 }
 
 void Worker::pushAsync() {
-  mtx_.lock();
-  mtx_.unlock();
+  if (rank_ == Node::getCurRank()) {
+    if (debug_) printf("+[Worker %d](async): push gradients to the server\n", Node::getCurRank());
+    mtx_.lock();
+    boost::function<void (void)> pushFunc(boost::bind(&Worker::push, this));
+    boost::thread t(pushFunc);
+    t.join();
+    mtx_.unlock();
+    if (debug_) printf("-[Worker %d](async): finish push gradients\n", Node::getCurRank());
+  }
 }
 
 void Worker::setDiff(double* computedDiff) {
