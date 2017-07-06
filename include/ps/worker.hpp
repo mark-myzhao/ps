@@ -31,7 +31,6 @@ class Worker : public Node {
     void pullAsync();
     void pushAsync();
     void setDiff(double* computedDiff);
-    void wait() const { MPI_Barrier(MPI_COMM_WORLD); }
   private:
     Worker(int rank, int size, int root, int count, bool debug)
       : Node(rank, size, root, count, debug) {}

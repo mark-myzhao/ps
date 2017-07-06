@@ -72,6 +72,7 @@ void asyncTest(int* argc, char*** argv) {
   }
   Psenv::initalize(argc, argv);
   Psenv* env = Psenv::getEnv(0, count);
+  env->setDebug(true);
   Server* server = env->getServer();
   Worker* worker = env->getWorker();
   double* tmpBuf = new double[5];
@@ -96,16 +97,6 @@ void asyncTest(int* argc, char*** argv) {
   delete [] data;
   delete [] preComputedDiff;
   Psenv::finalize();
-}
-
-void hello() {
-  for (int i = 0; i < 10; ++i) {
-    cout << i << endl;
-  }
-}
-
-void hello2() {
-  std::cout << boost::this_thread::get_id() << std::endl;
 }
 
 int main(int argc, char** argv) {

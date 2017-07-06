@@ -24,10 +24,14 @@ class Psenv {
       if (worker_ != NULL) delete worker_;
       if (server_ != NULL) delete server_;
       if (env_ != NULL) delete env_;
-      MPI_Finalize();
     }
-    bool isServer() const;
+    // enable debug info
     void setDebug(bool debug);
+
+    // judge if current node is server
+    bool isServer() const;
+
+    // worker and server factory
     Worker* getWorker();
     Server* getServer();
 
@@ -36,12 +40,16 @@ class Psenv {
       if (env_ == NULL) env_ = new Psenv(root, count, debug);
       return env_;
     }
+
+    // initalize and finalize MPI environment
     static void initalize(int* argc, char*** argv) {
       MPI_Init(argc, argv);
     }
     static void finalize() {
       MPI_Finalize();
     }
+
+    // get the rank of current node
     static int getCurRank() {
       int rank = -1;
       MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -50,10 +58,10 @@ class Psenv {
   private:
     Psenv(int root, int count, bool debug); 
     static Psenv* env_;
-    int size_;   // number of nodes
-    int count_;  // number of parameters in the net
-    int root_;   // rank of the server
-    bool debug_;
+    int size_;    // number of nodes
+    int count_;   // number of parameters in the net
+    int root_;    // rank of the server
+    bool debug_;  // determine if debug info is enabled
     Worker* worker_ = NULL;
     Server* server_ = NULL;
 };

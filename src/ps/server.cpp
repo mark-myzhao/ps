@@ -11,7 +11,9 @@ void Server::recvDiff() {
   for (int i = 0; i < size_; ++i) {
     //  accumulate diff
     if (i != root_) {
+      if (debug_) printf("+[SERVER %d]: wait gradients from WORKER %d\n", Node::getCurRank(), i);
       MPI_Recv(tmpBuf, count_, MPI_DOUBLE, i, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      if (debug_) printf("-[SERVER %d]: received gradients from WORKER %d\n", Node::getCurRank(), i);
       for (int j = 0; j < count_; ++j) {
         diff_[j] += tmpBuf[j];
       }
@@ -26,7 +28,9 @@ void Server::recvDiff() {
 void Server::sendWeight() const {
   for (int i = 0; i < size_; ++i) {
     if (i != root_) {
+      if (debug_) printf("+[SERVER %d]: send weights to WORKER %d\n", Node::getCurRank(), i);
       MPI_Send(data_, count_, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+      if (debug_) printf("-[SERVER %d]: finish sending weights to WORKER %d\n", Node::getCurRank(), i);
     }
   }
 }
@@ -51,17 +55,17 @@ void Server::asyncOp(int op) {
     }
     // use thread to collect diff
     if (op == Server::OP_RECV) {
-      if (debug_) printf("+[Server %d](async): receive gradients from worker %d\n", Node::getCurRank(), i);
+      if (debug_) printf("+[SERVER %d](async): receive gradients from WORKER %d\n", Node::getCurRank(), i);
       boost::function<void (int)> recvAsync(boost::bind(&Server::recvDiffFromAWorker, this, _1));
       boost::thread* t = new boost::thread(recvAsync, i);
       threadList.push_back(t);
-      if (debug_) printf("-[Server %d](async): finish receiving gradients from worker %d\n", Node::getCurRank(), i);
+      if (debug_) printf("-[SERVER %d](async): finish receiving gradients from WORKER %d\n", Node::getCurRank(), i);
     } else if (op == Server::OP_SEND) {
-      if (debug_) printf("+[Server %d](async): send weight to worker %d\n", Node::getCurRank(), i);
+      if (debug_) printf("+[SERVER %d](async): send weight to WORKER %d\n", Node::getCurRank(), i);
       boost::function<void (int)> sendAsync(boost::bind(&Server::sendWeightToAWorker, this, _1));
       boost::thread* t = new boost::thread(sendAsync, i);
       threadList.push_back(t);
-      if (debug_) printf("-[Server %d](async): finish sending weight to worker %d\n", Node::getCurRank(), i);
+      if (debug_) printf("-[SERVER %d](async): finish sending weight to WORKER %d\n", Node::getCurRank(), i);
     }
   }
   for (int i = 0; i < threadList.size(); ++i) {

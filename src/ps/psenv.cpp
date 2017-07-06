@@ -23,7 +23,8 @@ void Psenv::setDebug(bool debug) {
 Worker* Psenv::getWorker() {
   if (isServer()) return NULL;
   if (worker_ == NULL) {
-    worker_ = new Worker(getCurRank(), size_, root_, count_, debug_);
+    worker_ = new Worker(Psenv::getCurRank(), size_, root_, count_, debug_);
+    if (debug_) printf("[PSENV]: WORKER of rank %d created\n", Psenv::getCurRank());
   }
   return worker_;
 }
@@ -31,7 +32,8 @@ Worker* Psenv::getWorker() {
 Server* Psenv::getServer() {
   if (!isServer()) return NULL;
   if (server_ == NULL) {
-    server_ = new Server(getCurRank(), size_, root_, count_, debug_);
+    server_ = new Server(Psenv::getCurRank(), size_, root_, count_, debug_);
+    if (debug_) printf("[PSENV]: SERVER of rank %d created\n", Psenv::getCurRank());
   }
   return server_;
 }
